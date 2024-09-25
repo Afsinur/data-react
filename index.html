@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn-letcss.netlify.app/js/letcss-v6.js"></script>
+    <script src="data-react.js"></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="bg-blue-300">
+      <div class="container mx-auto">
+        <div class="flex gap-2 justify-between items-center py-4">
+          <a href="#">logo</a>
+
+          <ul data-react="mapData(ulData)" class="flex gap-8 items-center">
+            <li data-map class="uppercase text-slate-50 font-semibold">
+              <a href="{href}">{text}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="hidden let('btn', 'bg-red-300 px-6 py-2 rounded-lg hover:bg-red-600 hover:text-slate-200 capitalize')"
+    ></button>
+
+    <div class="m-4">
+      <div data-react="mapData(cardData)" class="grid gap-4 grid-cols-3">
+        <div data-map class="bg-blue-300/80 p-4 rounded-xl">
+          <div class="grid gap-2">
+            <h2 class="text-xl text-slate-800 capitalize">{title}</h2>
+            <p class="text-sm text-slate-600">{subTitle}</p>
+          </div>
+
+          <div
+            data-if="{author}"
+            class="flex gap-2 items-center m-4 { freelancer ? 'bg-green-100/80 border border-2 border-red-500' : 'bg-gray-100/80' } p-4 rounded-xl"
+          >
+            <img
+              src="{src}"
+              alt="{alt}"
+              class="rounded-full w-14 h-14 object-cover object-center"
+            />
+
+            <div>
+              <h3 class="capitalize text-slate-600">{h3}</h3>
+              <p class="capitalize text-slate-400">{p2}</p>
+            </div>
+          </div>
+
+          <div class="{ author ? '' : 'hidden'}">
+            { freelancer ? '
+            <button onclick="alert(1)" class="set('btn')">click me</button>
+            ' : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-4">
+      <button class="set('btn')">hover me</button>
+    </div>
+
+    <div class="m-4">
+      <div data-react="mapData(contentData)">
+        <div data-map class="m-4 p-10 py-20 grid gap-4 grid-cols-2 bg-gray-100">
+          <div class="bg-blue-300 p-4 { right ? 'order-2' : '' }">
+            <img src="{img}" alt="image" />
+          </div>
+
+          <div class="bg-red-300 p-4 { right ? 'order-1' : '' }"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
