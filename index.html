@@ -15,7 +15,10 @@
         <div class="flex gap-2 justify-between items-center py-4">
           <a href="#">logo</a>
 
-          <ul data-react="mapData(ulData)" class="flex gap-8 items-center">
+          <div data-include-html="./templates/template"></div>
+          <div data-include-html="./templates/template2"></div>
+
+          <ul data-react="map(ulData)" class="flex gap-8 items-center">
             <li data-map class="uppercase text-slate-50 font-semibold">
               <a href="{href}">{text}</a>
             </li>
@@ -29,7 +32,7 @@
     ></button>
 
     <div class="m-4">
-      <div data-react="mapData(cardData)" class="grid gap-4 grid-cols-3">
+      <div data-react="map(cardData)" class="grid gap-4 grid-cols-3">
         <div data-map class="bg-blue-300/80 p-4 rounded-xl">
           <div class="grid gap-2">
             <h2 class="text-xl text-slate-800 capitalize">{title}</h2>
@@ -66,7 +69,7 @@
     </div>
 
     <div class="m-4">
-      <div data-react="mapData(contentData)">
+      <div data-react="map(contentData)">
         <div data-map class="m-4 p-10 py-20 grid gap-4 grid-cols-2 bg-gray-100">
           <div class="bg-blue-300 p-4 { right ? 'order-2' : '' }">
             <img src="{img}" alt="image" />

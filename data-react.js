@@ -1,4 +1,20 @@
+const initObj = {
+  initDataset: "react",
+  templateDataset: "map",
+  includeHtmlDataset: "include-html",
+};
+const includeHtml = `
+return (async ()=>{
+  let finaleUrl = url+'.html';
+
+  let res = await fetch(finaleUrl);
+  let txt = await res.text();
+  
+  return txt;
+  })()
+  `;
 let globalDom = null;
+let globalIncludeDom = null;
 function stringToDOM(htmlString) {
   // Create a temporary container element
   const tempDiv = document.createElement("div");
@@ -10,7 +26,7 @@ function stringToDOM(htmlString) {
 function isBoolean(value) {
   return typeof value === "boolean";
 }
-function mapData(dt, modifiedStr) {
+function map(dt, modifiedStr) {
   function replacePlaceholders(template, replacements) {
     return template.replace(/{(\w+)}/g, (match, key) => {
       if (isBoolean(replacements[key])) {
@@ -78,26 +94,67 @@ function modifyPrintDataString(inputString, newText) {
   // Add ", newData)" at the end
   return modifiedString + `, ${newText})`;
 }
+function convertToCamelCase(str) {
+  return str
+    .split("-")
+    .map((word, index) => {
+      if (index === 0) {
+        // Keep the first word lowercase
+        return word.toLowerCase();
+      }
+      // Capitalize the first letter of the subsequent words
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join("");
+}
 function loadDataReact(obj) {
-  document.querySelectorAll(`[data-${obj.initDataset}]`).forEach((dom) => {
-    globalDom = dom;
-
-    let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
-
-    let tempStr = temp.outerHTML.toString();
-
-    let fnStr = dom.dataset[obj.initDataset];
-    let modifiedFnStr = modifyPrintDataString(
-      fnStr,
-      `${JSON.stringify(tempStr)}`
+  function includedHtmls() {
+    let includeHtmlDoms = document.querySelectorAll(
+      `[data-${obj.includeHtmlDataset}]`
     );
 
-    let newF = new Function(modifiedFnStr);
+    let mapedIncludeHtmls = Array.from(includeHtmlDoms).map((dom, i) => {
+      globalIncludeDom = dom;
 
-    newF();
-  });
+      let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
+      let newF = new Function("url", includeHtml);
+
+      return { dom, fnStr, newF };
+    });
+
+    mapedIncludeHtmls.forEach(async (obj, i) => {
+      let htmlStr = await obj.newF(obj.fnStr);
+      obj.dom.innerHTML = htmlStr;
+
+      if (i + 1 == mapedIncludeHtmls.length) {
+        setTimeout(() => {
+          dataMaps();
+        });
+      }
+    });
+  }
+  function dataMaps() {
+    let dataMapDoms = document.querySelectorAll(`[data-${obj.initDataset}]`);
+
+    dataMapDoms.forEach((dom, i) => {
+      globalDom = dom;
+
+      let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
+
+      let tempStr = temp.outerHTML.toString();
+
+      let fnStr = dom.dataset[obj.initDataset];
+      let modifiedFnStr = modifyPrintDataString(
+        fnStr,
+        `${JSON.stringify(tempStr)}`
+      );
+
+      let newF = new Function(modifiedFnStr);
+
+      newF();
+    });
+  }
+  includedHtmls();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  loadDataReact({ initDataset: "react", templateDataset: "map" });
-});
+window.addEventListener("DOMContentLoaded", () => loadDataReact(initObj));

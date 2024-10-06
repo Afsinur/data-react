@@ -49,3 +49,5 @@ const contentData = [
     right: false,
   },
 ];
+const tempData = [{ tx: "1" }, { tx: "2" }];
+const tempData2 = [{ tx: "3" }, { tx: "4" }];
