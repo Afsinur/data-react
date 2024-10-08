@@ -13,8 +13,6 @@ return (async ()=>{
   return txt;
   })()
   `;
-let globalDom = null;
-let globalIncludeDom = null;
 function stringToDOM(htmlString) {
   // Create a temporary container element
   const tempDiv = document.createElement("div");
@@ -26,65 +24,40 @@ function stringToDOM(htmlString) {
 function isBoolean(value) {
   return typeof value === "boolean";
 }
-function map(dt, modifiedStr) {
-  function replacePlaceholders(template, replacements) {
-    return template.replace(/{(\w+)}/g, (match, key) => {
-      if (isBoolean(replacements[key])) {
-        return replacements[key];
-      } else if (replacements[key] == undefined || replacements[key] == null) {
-        return `false`;
-      } else {
-        return replacements[key] || match;
-      }
-    });
-  }
-  function evaluateComplexConditions(obj, str) {
-    // Regular expression to match everything inside { ... }
-    const regex = /\{([^}]+)\}/g;
+function replacePlaceholders(template, replacements) {
+  return template.replace(/{(\w+)}/g, (match, key) => {
+    if (isBoolean(replacements[key])) {
+      return replacements[key];
+    } else if (replacements[key] == undefined || replacements[key] == null) {
+      return `false`;
+    } else {
+      return replacements[key] || match;
+    }
+  });
+}
+function evaluateComplexConditions(obj, str) {
+  // Regular expression to match everything inside { ... }
+  const regex = /\{([^}]+)\}/g;
 
-    return str.replace(regex, (match, condition) => {
-      try {
-        // Escape any potential HTML inside quotes
-        const safeCondition = condition.replace(/'/g, "`");
+  return str.replace(regex, (match, condition) => {
+    try {
+      // Escape any potential HTML inside quotes
+      const safeCondition = condition.replace(/'/g, "`");
 
-        // Replace keys with values from the object
-        const evaluatedCondition = safeCondition.replace(
-          /\b(\w+)\b/g,
-          (key) => {
-            return obj.hasOwnProperty(key) ? obj[key] : key;
-          }
-        );
+      // Replace keys with values from the object
+      const evaluatedCondition = safeCondition.replace(/\b(\w+)\b/g, (key) => {
+        return obj.hasOwnProperty(key) ? obj[key] : key;
+      });
 
-        // Use "new Function" to evaluate the resulting condition
-        const result = new Function(`return ${evaluatedCondition};`)();
+      // Use "new Function" to evaluate the resulting condition
+      const result = new Function(`return ${evaluatedCondition};`)();
 
-        // Return the evaluated result, ensuring HTML is preserved
-        return typeof result === "string" ? result.replace(/`/g, "'") : result;
-      } catch (e) {
-        console.error("Error evaluating condition:", condition, e);
-        return "";
-      }
-    });
-  }
-
-  globalDom.innerHTML = ``;
-  dt.forEach((d) => {
-    let replacedStr = replacePlaceholders(modifiedStr, d);
-    let finalStr = evaluateComplexConditions(d, replacedStr);
-
-    let xDom = stringToDOM(finalStr);
-
-    let ifDom = xDom.querySelector(`[data-if]`);
-    let elseDom = xDom.querySelector(`[data-else]`);
-    let ifNotDom = xDom.querySelector(`[data-if-not]`);
-
-    ifDom?.dataset[`if`] == "false" && ifDom.remove();
-    elseDom?.dataset[`else`] == "true" && elseDom.remove();
-    ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
-
-    let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
-
-    globalDom.innerHTML += replacedStrAgain;
+      // Return the evaluated result, ensuring HTML is preserved
+      return typeof result === "string" ? result.replace(/`/g, "'") : result;
+    } catch (e) {
+      console.error("Error evaluating condition:", condition, e);
+      return "";
+    }
   });
 }
 function modifyPrintDataString(inputString, newText) {
@@ -108,57 +81,81 @@ function convertToCamelCase(str) {
     .join("");
 }
 function loadDataReact(obj) {
-  function includedHtmls() {
-    let includeHtmlDoms = document.querySelectorAll(
+  function includedHtmls(documentDom) {
+    let includeHtmlDoms = documentDom.querySelectorAll(
       `[data-${obj.includeHtmlDataset}]`
     );
 
     if (Array.from(includeHtmlDoms).length > 0) {
       let mapedIncludeHtmls = Array.from(includeHtmlDoms).map((dom, i) => {
-        globalIncludeDom = dom;
-
         let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
         let newF = new Function("url", includeHtml);
 
         return { dom, fnStr, newF };
       });
 
-      mapedIncludeHtmls.forEach(async (obj, i) => {
-        let htmlStr = await obj.newF(obj.fnStr);
-        obj.dom.innerHTML = htmlStr;
+      mapedIncludeHtmls.forEach(async (ob, i) => {
+        let htmlStr = await ob.newF(ob.fnStr);
+        ob.dom.innerHTML = htmlStr;
+        dataMaps(ob.dom);
 
-        if (i + 1 == mapedIncludeHtmls.length) {
-          setTimeout(() => {
-            dataMaps();
-          });
+        if (htmlStr.includes(`data-${obj.includeHtmlDataset}`)) {
+          includedHtmls(ob.dom);
         }
       });
     } else {
-      dataMaps();
+      dataMaps(document);
     }
   }
-  function dataMaps() {
-    let dataMapDoms = document.querySelectorAll(`[data-${obj.initDataset}]`);
+  function dataMaps(documentDom) {
+    let dataMapDoms = documentDom.querySelectorAll(`[data-${obj.initDataset}]`);
 
     dataMapDoms.forEach((dom, i) => {
-      globalDom = dom;
-
       let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
 
-      let tempStr = temp.outerHTML.toString();
+      let arrayName = extractMapArgument(dom.dataset[obj.initDataset]);
+      new Function(`return ${arrayName}`)().forEach((d, i) => {
+        let replacedStr = replacePlaceholders(temp.outerHTML.toString(), d);
+        let finalStr = evaluateComplexConditions(d, replacedStr);
 
-      let fnStr = dom.dataset[obj.initDataset];
-      let modifiedFnStr = modifyPrintDataString(
-        fnStr,
-        `${JSON.stringify(tempStr)}`
-      );
+        let xDom = stringToDOM(finalStr);
 
-      let newF = new Function(modifiedFnStr);
+        let ifDom = xDom.querySelector(`[data-if]`);
+        let elseDom = xDom.querySelector(`[data-else]`);
+        let ifNotDom = xDom.querySelector(`[data-if-not]`);
 
-      newF();
+        ifDom?.dataset[`if`] == "false" && ifDom.remove();
+        elseDom?.dataset[`else`] == "true" && elseDom.remove();
+        ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
+
+        let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
+
+        if (i < 1) {
+          dom.innerHTML = "";
+          dom.innerHTML += replacedStrAgain;
+        } else {
+          dom.innerHTML += replacedStrAgain;
+        }
+      });
     });
   }
-  includedHtmls();
+
+  includedHtmls(document);
+  dataMaps(document);
+}
+function extractMapArgument(str) {
+  // Regular expression to find `map(someArgument)`
+  const regex = /map\(([^)]+)\)/;
+
+  // Execute the regular expression on the input string
+  const match = str.match(regex);
+
+  // If a match is found, return the argument (first capture group)
+  if (match) {
+    return match[1].trim();
+  } else {
+    return null; // If no match is found, return null
+  }
 }
 
 window.addEventListener("DOMContentLoaded", () => loadDataReact(initObj));

@@ -1,0 +1,24 @@
+<div data-react="map(cardData)" class="grid gap-4 grid-cols-3">
+  <div data-map class="bg-blue-300/80 p-4 rounded-xl">
+    <div class="grid gap-2">
+      <h2 class="text-xl text-slate-800 capitalize">{title}</h2>
+      <p class="text-sm text-slate-600">{subTitle}</p>
+    </div>
+
+    <div
+      data-if="{author}"
+      class="flex gap-2 items-center m-4 { freelancer ? 'bg-green-100/80 border border-2 border-red-500' : 'bg-gray-100/80' } p-4 rounded-xl"
+    >
+      <img
+        src="{src}"
+        alt="{alt}"
+        class="rounded-full w-14 h-14 object-cover object-center"
+      />
+
+      <div>
+        <h3 class="capitalize text-slate-600">{h3}</h3>
+        <p class="capitalize text-slate-400">{p2}</p>
+      </div>
+    </div>
+  </div>
+</div>
