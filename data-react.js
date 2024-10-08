@@ -113,25 +113,29 @@ function loadDataReact(obj) {
       `[data-${obj.includeHtmlDataset}]`
     );
 
-    let mapedIncludeHtmls = Array.from(includeHtmlDoms).map((dom, i) => {
-      globalIncludeDom = dom;
+    if (Array.from(includeHtmlDoms).length > 0) {
+      let mapedIncludeHtmls = Array.from(includeHtmlDoms).map((dom, i) => {
+        globalIncludeDom = dom;
 
-      let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
-      let newF = new Function("url", includeHtml);
+        let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
+        let newF = new Function("url", includeHtml);
 
-      return { dom, fnStr, newF };
-    });
+        return { dom, fnStr, newF };
+      });
 
-    mapedIncludeHtmls.forEach(async (obj, i) => {
-      let htmlStr = await obj.newF(obj.fnStr);
-      obj.dom.innerHTML = htmlStr;
+      mapedIncludeHtmls.forEach(async (obj, i) => {
+        let htmlStr = await obj.newF(obj.fnStr);
+        obj.dom.innerHTML = htmlStr;
 
-      if (i + 1 == mapedIncludeHtmls.length) {
-        setTimeout(() => {
-          dataMaps();
-        });
-      }
-    });
+        if (i + 1 == mapedIncludeHtmls.length) {
+          setTimeout(() => {
+            dataMaps();
+          });
+        }
+      });
+    } else {
+      dataMaps();
+    }
   }
   function dataMaps() {
     let dataMapDoms = document.querySelectorAll(`[data-${obj.initDataset}]`);

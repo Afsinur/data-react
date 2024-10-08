@@ -51,3 +51,9 @@ const contentData = [
 ];
 const tempData = [{ tx: "1" }, { tx: "2" }];
 const tempData2 = [{ tx: "3" }, { tx: "4" }];
+const cards = [
+  { tx: "home" },
+  { tx: "about" },
+  { tx: "contact" },
+  { tx: "blogs" },
+];
