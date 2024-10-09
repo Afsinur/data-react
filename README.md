@@ -140,7 +140,7 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 </div>
 ```
 
-add a dynamic data using 'data' attribute and in the template add 'propsData' in the map(), this is for the dynamicness of the template or component
+add a dynamic data using 'data' attribute here contentData and contentData2 are arries and in the template add 'propsData' in the map(), this is for the dynamicness of the template or component
 
 ### Summary
 
