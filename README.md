@@ -92,14 +92,18 @@ const cardData = [
           <p class="capitalize text-slate-400">{p2}</p>
         </div>
       </div>
-
-      <div class="{ author ? '' : 'hidden'}">
-        { freelancer ? '
-        <button onclick="alert(1)" class="set('btn')">click me</button>
-        ' : ''}
-      </div>
     </div>
   </div>
+</div>
+```
+
+### TO ADD EXTERNAL HTML File
+
+```html
+<div>
+  <div
+    data-include-html="./pages/only-html-file-name-without-file-extention"
+  ></div>
 </div>
 ```
 
