@@ -49,3 +49,17 @@ const contentData = [
     right: false,
   },
 ];
+const contentData2 = [
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: true,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: true,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: false,
+  },
+];

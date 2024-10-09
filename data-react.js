@@ -88,19 +88,36 @@ function loadDataReact(obj) {
 
     if (Array.from(includeHtmlDoms).length > 0) {
       let mapedIncludeHtmls = Array.from(includeHtmlDoms).map((dom, i) => {
-        let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
-        let newF = new Function("url", includeHtml);
+        try {
+          let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
+          let newF = new Function("url", includeHtml);
 
-        return { dom, fnStr, newF };
+          console.log(
+            new Function(`return ${dom.attributes[`data`]?.value}`)()
+          );
+
+          return {
+            dom,
+            fnStr,
+            newF,
+            propObj: 1,
+          };
+        } catch (error) {
+          console.log(error);
+        }
       });
 
       mapedIncludeHtmls.forEach(async (ob, i) => {
-        let htmlStr = await ob.newF(ob.fnStr);
-        ob.dom.innerHTML = htmlStr;
-        dataMaps(ob.dom);
+        try {
+          let htmlStr = await ob.newF(ob.fnStr);
+          ob.dom.innerHTML = htmlStr;
+          dataMaps(ob.dom);
 
-        if (htmlStr.includes(`data-${obj.includeHtmlDataset}`)) {
-          includedHtmls(ob.dom);
+          if (htmlStr.includes(`data-${obj.includeHtmlDataset}`)) {
+            includedHtmls(ob.dom);
+          }
+        } catch (error) {
+          console.log(error);
         }
       });
     } else {
@@ -111,32 +128,45 @@ function loadDataReact(obj) {
     let dataMapDoms = documentDom.querySelectorAll(`[data-${obj.initDataset}]`);
 
     dataMapDoms.forEach((dom, i) => {
-      let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
+      try {
+        let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
 
-      let arrayName = extractMapArgument(dom.dataset[obj.initDataset]);
-      new Function(`return ${arrayName}`)().forEach((d, i) => {
-        let replacedStr = replacePlaceholders(temp.outerHTML.toString(), d);
-        let finalStr = evaluateComplexConditions(d, replacedStr);
+        let arrayName = extractMapArgument(dom.dataset[obj.initDataset]);
+        new Function(`return ${arrayName}`)().forEach((d, i) => {
+          let replacedStr = replacePlaceholders(temp.outerHTML.toString(), d);
+          let finalStr = evaluateComplexConditions(d, replacedStr);
 
-        let xDom = stringToDOM(finalStr);
+          let xDom = stringToDOM(finalStr);
 
-        let ifDom = xDom.querySelector(`[data-if]`);
-        let elseDom = xDom.querySelector(`[data-else]`);
-        let ifNotDom = xDom.querySelector(`[data-if-not]`);
+          let ifDom = xDom.querySelector(`[data-if]`);
+          let elseDom = xDom.querySelector(`[data-else]`);
+          let ifNotDom = xDom.querySelector(`[data-if-not]`);
 
-        ifDom?.dataset[`if`] == "false" && ifDom.remove();
-        elseDom?.dataset[`else`] == "true" && elseDom.remove();
-        ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
+          ifDom?.dataset[`if`] == "false" && ifDom.remove();
+          elseDom?.dataset[`else`] == "true" && elseDom.remove();
+          ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
 
-        let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
+          let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
 
-        if (i < 1) {
-          dom.innerHTML = "";
-          dom.innerHTML += replacedStrAgain;
-        } else {
-          dom.innerHTML += replacedStrAgain;
+          if (i < 1) {
+            dom.innerHTML = "";
+            dom.innerHTML += replacedStrAgain;
+          } else {
+            dom.innerHTML += replacedStrAgain;
+          }
+        });
+      } catch (error) {
+        console.log(error);
+
+        if (error.message == `propsData is not defined`) {
+          let rplcStr = dom.dataset[obj.initDataset].replace(
+            "propsData",
+            dom.closest(`[data]`).attributes[`data`]?.value
+          );
+          dom.dataset[obj.initDataset] = rplcStr;
+          dataMaps(dom.closest(`[data]`));
         }
-      });
+      }
     });
   }
 

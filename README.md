@@ -112,6 +112,38 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 </div>
 ```
 
+### TO USE REUSABLE EXTERNAL HTML File
+
+```html
+<div>
+  <div data-include-html="./templates/content" data="contentData"></div>
+
+  <div class="p-4 bg-red-500">
+    <div data-include-html="./templates/content" data="contentData2"></div>
+  </div>
+</div>
+```
+
+### template
+
+```html
+<div>
+  <div data-react="map(propsData)">
+    <div data-map class="m-4 p-10 py-20 grid gap-4 grid-cols-2 bg-gray-100">
+      <div class="bg-blue-300 p-4 { right ? 'order-2' : '' }">
+        <img src="{img}" alt="image" />
+      </div>
+
+      <div class="bg-red-300 p-4 { right ? 'order-1' : '' }"></div>
+    </div>
+  </div>
+</div>
+```
+
+add a dynamic data using 'data' attribute and in the template add 'propsData' in the map(), this is for the dynamicness of the template or component
+
+### Summary
+
 This `.md` file contains a description of the `data-react` HTML plugin along
 with usage examples for including HTML files, mapping arrays, and conditionally
 rendering data.
