@@ -140,7 +140,13 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 </div>
 ```
 
-add a dynamic data using 'data' attribute here contentData and contentData2 are arries and in the template add 'propsData' in the map(), this is for the dynamicness of the template or component
+### Main HTML
+
+In the main HTML file, you'll reference external HTML templates using the data-include-html attribute. The data attribute will pass dynamic data (e.g., contentData and contentData2) to the template.
+
+### External HTML Template (e.g., content.html)
+
+This external template file is where the dynamic data will be injected. The data-react="map(propsData)" indicates the area where the data should be mapped, and the data-map attribute identifies elements that will receive the data.
 
 ### Summary
 
