@@ -124,6 +124,10 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 </div>
 ```
 
+### Main HTML
+
+In the main HTML file, you'll reference external HTML templates using the data-include-html attribute. The data attribute will pass dynamic data (e.g., contentData and contentData2) to the template.
+
 ### template
 
 ```html
@@ -139,10 +143,6 @@ This example maps over `cardData` and generates HTML conditionally based on the 
   </div>
 </div>
 ```
-
-### Main HTML
-
-In the main HTML file, you'll reference external HTML templates using the data-include-html attribute. The data attribute will pass dynamic data (e.g., contentData and contentData2) to the template.
 
 ### External HTML Template (e.g., content.html)
 
