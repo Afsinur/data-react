@@ -112,8 +112,6 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 </div>
 ```
 
-```
 This `.md` file contains a description of the `data-react` HTML plugin along
 with usage examples for including HTML files, mapping arrays, and conditionally
 rendering data.
-```
