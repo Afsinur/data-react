@@ -26,12 +26,16 @@ function isBoolean(value) {
 }
 function replacePlaceholders(template, replacements) {
   return template.replace(/{(\w+)}/g, (match, key) => {
-    if (isBoolean(replacements[key])) {
-      return replacements[key];
-    } else if (replacements[key] == undefined || replacements[key] == null) {
-      return `false`;
+    if (Object.keys(replacements).includes(key)) {
+      if (isBoolean(replacements[key])) {
+        return replacements[key];
+      } else if (replacements[key] == undefined || replacements[key] == null) {
+        return `false`;
+      } else {
+        return replacements[key] || match;
+      }
     } else {
-      return replacements[key] || match;
+      return match;
     }
   });
 }
@@ -55,8 +59,9 @@ function evaluateComplexConditions(obj, str) {
       // Return the evaluated result, ensuring HTML is preserved
       return typeof result === "string" ? result.replace(/`/g, "'") : result;
     } catch (e) {
-      console.error("Error evaluating condition:", condition, e);
-      return "";
+      console.log(e);
+
+      return match;
     }
   });
 }
@@ -92,16 +97,7 @@ function loadDataReact(obj) {
           let fnStr = dom.dataset[convertToCamelCase(obj.includeHtmlDataset)];
           let newF = new Function("url", includeHtml);
 
-          console.log(
-            new Function(`return ${dom.attributes[`data`]?.value}`)()
-          );
-
-          return {
-            dom,
-            fnStr,
-            newF,
-            propObj: 1,
-          };
+          return { dom, fnStr, newF };
         } catch (error) {
           console.log(error);
         }
@@ -132,8 +128,16 @@ function loadDataReact(obj) {
         let temp = dom.querySelector(`[data-${obj.templateDataset}]`);
 
         let arrayName = extractMapArgument(dom.dataset[obj.initDataset]);
+        let mpdName = `map(${arrayName})`;
+        let onlineDom = document.querySelector(
+          `[data-${obj.initDataset}="${mpdName}"]`
+        );
+
         new Function(`return ${arrayName}`)().forEach((d, i) => {
+          console.log(d);
+
           let replacedStr = replacePlaceholders(temp.outerHTML.toString(), d);
+
           let finalStr = evaluateComplexConditions(d, replacedStr);
 
           let xDom = stringToDOM(finalStr);
@@ -147,12 +151,13 @@ function loadDataReact(obj) {
           ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
 
           let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
+          console.log(replacedStrAgain);
 
           if (i < 1) {
-            dom.innerHTML = "";
-            dom.innerHTML += replacedStrAgain;
+            onlineDom.innerHTML = "";
+            onlineDom.innerHTML += replacedStrAgain;
           } else {
-            dom.innerHTML += replacedStrAgain;
+            onlineDom.innerHTML += replacedStrAgain;
           }
         });
       } catch (error) {

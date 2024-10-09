@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn-letcss.netlify.app/js/letcss-v6.js"></script>
+    <script src="data-react.js"></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <!-- <button
+      class="hidden let('btn', 'bg-red-300 px-6 py-2 rounded-lg hover:bg-red-600 hover:text-slate-200 capitalize')"
+    ></button>
+
+    <div data-include-html="./templates/nav-bar"></div>
+
+    <div data-include-html="./templates/card-container"></div>
+
+    <div data-include-html="./templates/content-data-container"></div> -->
+
+    <div data-include-html="./templates/content" data="contentData"></div>
+
+    <div class="p-4 bg-red-500">
+      <div data-include-html="./templates/content" data="contentData2"></div>
+    </div>
+  </body>
+</html>

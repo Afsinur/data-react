@@ -1,0 +1,14 @@
+<nav data-react="map([navInfo])" class="container mx-auto py-4">
+  <div data-map class="flex justify-between">
+    <a href="{href}">logo</a>
+
+    <div class="flex gap-8 items-center">
+      <div data-include-html="./components/navbar/ul" data="navInfo.ul"></div>
+
+      <div
+        data-include-html="./components/common/niceBtn"
+        data="[{tx:'menu',orderKey:true}]"
+      ></div>
+    </div>
+  </div>
+</nav>
