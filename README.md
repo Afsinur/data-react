@@ -97,6 +97,11 @@ const cardData = [
 </div>
 ```
 
+This example maps over `cardData` and generates HTML conditionally based on the `author` and `freelancer` properties. It includes an image, text content, and conditional buttons based on the data attributes.
+
+- The `freelancer` key controls the style of the card, applying different styles based on its value.
+- The `author` key toggles the visibility of a section based on its value, hiding content when the condition is `false`.
+
 ### TO ADD EXTERNAL HTML File
 
 ```html
@@ -105,14 +110,12 @@ const cardData = [
     data-include-html="./pages/only-html-file-name-without-file-extention"
   ></div>
 </div>
+
+This `.md` file contains a description of the `data-react` HTML plugin along
+with usage examples for including HTML files, mapping arrays, and conditionally
+rendering data.
 ```
 
-This example maps over `cardData` and generates HTML conditionally based on the `author` and `freelancer` properties. It includes an image, text content, and conditional buttons based on the data attributes.
-
-- The `freelancer` key controls the style of the card, applying different styles based on its value.
-- The `author` key toggles the visibility of a section based on its value, hiding content when the condition is `false`.
-
 ```
 
-This `.md` file contains a description of the `data-react` HTML plugin along with usage examples for including HTML files, mapping arrays, and conditionally rendering data.
 ```
