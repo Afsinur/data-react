@@ -87,6 +87,7 @@ function convertToCamelCase(str) {
 }
 function loadDataReact(obj) {
   function includedHtmls(documentDom) {
+    let ranElse = false;
     let includeHtmlDoms = documentDom.querySelectorAll(
       `[data-${obj.includeHtmlDataset}]`
     );
@@ -117,8 +118,11 @@ function loadDataReact(obj) {
         }
       });
     } else {
+      ranElse = true;
       dataMaps(document);
     }
+
+    return ranElse;
   }
   function dataMaps(documentDom) {
     let dataMapDoms = documentDom.querySelectorAll(`[data-${obj.initDataset}]`);
@@ -175,8 +179,9 @@ function loadDataReact(obj) {
     });
   }
 
-  includedHtmls(document);
-  dataMaps(document);
+  if (!includedHtmls(document)) {
+    dataMaps(document);
+  }
 }
 function extractMapArgument(str) {
   // Regular expression to find `map(someArgument)`
