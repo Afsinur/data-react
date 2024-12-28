@@ -180,6 +180,8 @@ function loadDataReact(obj) {
   }
 
   if (!includedHtmls(document)) {
+    console.log(183);
+
     dataMaps(document);
   }
 }
