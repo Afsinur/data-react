@@ -5,6 +5,13 @@ const navInfo = {
     tx: itm,
   })),
 };
+const ul = [
+  { li: "home" },
+  { li: "about" },
+  { li: "contact" },
+  { li: "blog" },
+  { li: "news" },
+];
 
 function handleMenuClose(order) {
   alert(order);
