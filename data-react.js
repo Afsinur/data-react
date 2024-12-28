@@ -86,6 +86,8 @@ function convertToCamelCase(str) {
     .join("");
 }
 function loadDataReact(obj) {
+  console.log(89);
+
   function includedHtmls(documentDom) {
     let ranElse = false;
     let includeHtmlDoms = documentDom.querySelectorAll(
