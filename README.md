@@ -122,6 +122,39 @@ This example maps over `cardData` and generates HTML conditionally based on the 
 - The `freelancer` key controls the style of the card, applying different styles based on its value.
 - The `author` key toggles the visibility of a section based on its value, hiding content when the condition is `false`.
 
+### JavaScript Data
+
+```js
+const contentData = [
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: false,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: true,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: false,
+  },
+];
+const contentData2 = [
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: true,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: true,
+  },
+  {
+    img: "https://static.vecteezy.com/system/resources/previews/036/226/872/non_2x/ai-generated-nature-landscapes-background-free-photo.jpg",
+    right: false,
+  },
+];
+```
+
 ### TO ADD EXTERNAL HTML File
 
 ```html
