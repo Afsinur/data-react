@@ -1,6 +1,26 @@
 Here is a `.md` file with the content you provided, formatted appropriately:
 
 ````markdown
+# install
+
+`data-react` is an HTML plugin for including external HTML files and mapping JavaScript arrays, similar to React.js functionality.
+
+## To Include The Plugin In The HTML File
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn-data-react.netlify.app/js/data-react-v2.js"></script>
+  </head>
+  <body></body>
+</html>
+```
+````
+
+This allows you to include external HTML files directly within the `body` of your document by specifying the file path in the `data-include-html` attribute.
+
+````markdown
 # data-react
 
 `data-react` is an HTML plugin for including external HTML files and mapping JavaScript arrays, similar to React.js functionality.
