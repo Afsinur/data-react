@@ -3,7 +3,7 @@ Here is a `.md` file with the content you provided, formatted appropriately:
 ````markdown
 # install
 
-`data-react` is an HTML plugin for including external HTML files and mapping JavaScript arrays, similar to React.js functionality.
+always use the `netlify` cdn
 
 ## To Include The Plugin In The HTML File
 
