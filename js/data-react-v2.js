@@ -86,8 +86,6 @@ function convertToCamelCase(str) {
     .join("");
 }
 function loadDataReact(obj) {
-  console.log(89);
-
   function includedHtmls(documentDom) {
     let ranElse = false;
     let includeHtmlDoms = documentDom.querySelectorAll(
@@ -140,8 +138,6 @@ function loadDataReact(obj) {
         );
 
         new Function(`return ${arrayName}`)().forEach((d, i) => {
-          console.log(d);
-
           let replacedStr = replacePlaceholders(temp.outerHTML.toString(), d);
 
           let finalStr = evaluateComplexConditions(d, replacedStr);
@@ -157,7 +153,6 @@ function loadDataReact(obj) {
           ifNotDom?.dataset[`ifNot`] == "true" && ifNotDom.remove();
 
           let replacedStrAgain = replacePlaceholders(xDom.outerHTML, d);
-          console.log(replacedStrAgain);
 
           if (i < 1) {
             onlineDom.innerHTML = "";
