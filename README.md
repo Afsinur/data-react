@@ -227,6 +227,66 @@ const contentData2 = [
 ];
 
 const ul1 = [{ tx1: "technology" }, { tx1: "flowers" }, { tx1: "mountain" }];
+
+const ul = [
+  { tx: "technology1", showImports: false },
+  { tx: "flowers1", showImports: false },
+  { tx: "mountain1", showImports: false },
+];
+const deepNested = [
+  {
+    img: "https://cdn.pixabay.com/photo/2015/10/09/00/55/lotus-978659_960_720.jpg",
+    title: "Laptop with Coffee",
+    badge: [
+      {
+        tx: "technology",
+        subBadge: [
+          { tx1: "coding" },
+          { tx1: "development" },
+          { tx1: "design" },
+        ],
+      },
+    ],
+    styles: {
+      card: "shadow-md p-4 bg-blue-500 border border-yellow-500",
+      img: "rounded-lg",
+      badge: "text-sm text-gray-700",
+      options: {
+        text: "my-text 1",
+      },
+      ul: [
+        { tx: "technology", lis: [{ li: "li 1" }, { li: "li 2" }] },
+        { tx: "flowers", lis: [{ li: "li 1" }, { li: "li 2" }] },
+        { tx: "mountain", lis: [{ li: "li 1" }, { li: "li 2" }] },
+      ],
+    },
+    makeRed: false,
+  },
+  {
+    img: "https://cdn.pixabay.com/photo/2024/01/14/16/30/mountain-range-8508224_960_720.jpg",
+    title: "Mountain range, River, Landscape image. Free for use.",
+    badge: [
+      {
+        tx: "flowers",
+        subBadge: [{ tx1: "garden" }, { tx1: "nature" }, { tx1: "blooming" }],
+      },
+    ],
+    styles: {
+      card: "shadow-md p-4 bg-pink-500 border border-purple-500",
+      img: "rounded-lg",
+      badge: "text-sm text-gray-700",
+      options: {
+        text: "my-text 2",
+      },
+      ul: [
+        { tx: "technology", lis: [{ li: "li 1" }, { li: "li 2" }] },
+        { tx: "flowers", lis: [{ li: "li 1" }, { li: "li 2" }] },
+        { tx: "mountain", lis: [{ li: "li 1" }, { li: "li 2" }] },
+      ],
+    },
+    makeRed: true,
+  },
+];
 ```
 
 ### TO USE REUSABLE EXTERNAL HTML File
@@ -261,6 +321,55 @@ const ul1 = [{ tx1: "technology" }, { tx1: "flowers" }, { tx1: "mountain" }];
 <div>
   <div react-import="./templates/ul1" data="ul1"></div>
 </div>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="script.js"></script>
+    <script src="data-react-v3.js" defer></script>
+  </head>
+  <body class="bg-gray-100 p-4">
+    <div react="deepNested" class="flex gap-4 items-center">
+      <div class="p-4 bg-white rounded-md">
+        <img
+          src="{ img }"
+          alt="online-image"
+          class="w-full h-[100px] object-cover object-center"
+        />
+
+        <div react-import="./data" data="{ styles.ul }"></div>
+      </div>
+    </div>
+
+    <div react-import="./data" data="ul"></div>
+    <!---->
+  </body>
+</html>
+
+<!-- data.html -->
+<ul react="data" class="flex gap-8 items-center">
+  <li>
+    <span>{ tx }</span>
+  </li>
+
+  <div
+    react-import="./about"
+    data="{ lis }"
+    class="{ showImports ? ``: `hidden` }"
+  ></div>
+
+  <div class="{ lis ? `hidden`:'' }">
+    { showImports ? ` ` : `
+    <p>1</p>
+    ` }
+  </div>
+</ul>
 ```
 
 ### Main HTML
