@@ -4,8 +4,9 @@ async function importHTML() {
   const elements = document.querySelectorAll("[react-import]");
   const importPromises = [];
 
-  elements.forEach((element) => {
+  function importify(element) {
     const filePath = element.getAttribute("react-import");
+
     if (!importedFiles.has(filePath)) {
       // Prevent fetching the same file
       importPromises.push(
@@ -18,16 +19,54 @@ async function importHTML() {
             }
           })
           .then((htmlContent) => {
-            // Insert the fetched HTML content into the element
-            element.innerHTML = htmlContent;
-            importedFiles.add(filePath); // Mark this file as imported
+            try {
+              // Insert the fetched HTML content into the element
+
+              let tempData = JSON.parse(
+                element.attributes.data.value.replace(/'/g, '"')
+              );
+
+              // Create a temporary element to handle nested structures
+              const tempDiv = document.createElement("div");
+              tempDiv.innerHTML = htmlContent;
+
+              const renderedHTML = tempData
+                .map((item) =>
+                  processTemplate(tempDiv.children[0].innerHTML, item)
+                )
+                .join("");
+
+              tempDiv.children[0].innerHTML = renderedHTML;
+
+              element.innerHTML = tempDiv.children[0].outerHTML;
+              importedFiles.add(filePath); // Mark this file as imported
+            } catch (error) {
+              if (error.message.includes("is not valid JSON")) {
+                // Insert the fetched HTML content into the element
+                console.log(htmlContent);
+
+                element.innerHTML = htmlContent;
+                importedFiles.add(filePath); // Mark this file as imported
+
+                return element;
+              }
+            }
+          })
+          .then(async (el) => {
+            await importHTML();
+
+            console.log(el && el);
+
+            console.log(el && updateReactElements(el, "again"));
           })
           .catch((error) => {
             console.error("Error loading HTML file:", error);
           })
       );
     }
-  });
+  }
+
+  elements.forEach(importify);
 
   // Wait for all imports to finish before continuing
   await Promise.all(importPromises);
@@ -62,25 +101,61 @@ async function processNestedImports() {
   }
 }
 
-function updateReactElements() {
+function updateReactElements(element, again) {
   const elements = document.querySelectorAll("[react]");
 
-  elements.forEach((element) => {
+  function reactify(element) {
     const key = element.getAttribute("react");
+
     try {
       const data = new Function(`return ${key}`)(); // Dynamically evaluate the data key
 
       if (Array.isArray(data)) {
         const template = element.innerHTML.trim(); // Save the initial HTML template
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = template;
+
         const renderedHTML = data
-          .map((item) => processTemplate(template, item))
+          .map((item) =>
+            processTemplate(
+              again
+                ? tempDiv.children[0].innerHTML
+                : tempDiv.children[0].outerHTML,
+              item
+            )
+          )
           .join("");
-        element.innerHTML = renderedHTML;
+
+        if (again) {
+          tempDiv.children[0].innerHTML = renderedHTML;
+          element.innerHTML = tempDiv.children[0].outerHTML;
+        } else {
+          tempDiv.innerHTML = renderedHTML;
+          element.innerHTML = tempDiv.innerHTML;
+        }
+      } else {
+        throw Error(data);
       }
     } catch (error) {
+      console.log(error.message);
+
+      if (error.message) {
+        const closestEl = element.closest(`[data]`);
+
+        element.setAttribute("react", closestEl.attributes[`data`]?.value);
+
+        updateReactElements(element, "again");
+      }
+
       console.error(`Error processing react attribute '${key}':`, error);
     }
-  });
+  }
+
+  if (element) {
+    reactify(element);
+  } else {
+    elements.forEach(reactify);
+  }
 }
 
 function processTemplate(template, data) {
@@ -88,13 +163,20 @@ function processTemplate(template, data) {
   let processedHTML = template.replace(
     /{\s*([^{}]+)\s*}/g, // Match anything inside curly braces
     (_, expression) => {
+      //console.log(expression, data);
+
       try {
         // Safely evaluate the expression in the context of 'data'
         const func = new Function(
           "data",
-          `with(data) { return ${expression}; }`
+          `with(data) {            
+            return ${expression}; 
+          }`
         );
-        return func(data) || "";
+
+        return typeof func(data) == "object"
+          ? JSON.stringify(func(data)).replace(/"/g, "'")
+          : func(data) || "";
       } catch (error) {
         console.error(`Error evaluating expression: ${expression}`, error);
         return `{ ${expression} }`; // Leave the expression unchanged if there's an error
@@ -130,6 +212,6 @@ function getNestedValue(obj, key) {
 
 // Call the function to process the data
 window.addEventListener("DOMContentLoaded", async () => {
-  await importHTML(); // Import external HTML files first
   updateReactElements(); // Then update dynamic elements
+  await importHTML(); // Import external HTML files first
 });
