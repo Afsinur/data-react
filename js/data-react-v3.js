@@ -2,6 +2,7 @@ let importedFiles = new Set(); // To track imported files and prevent duplicates
 
 async function importHTML() {
   const elements = document.querySelectorAll("[react-import]");
+
   const importPromises = [];
 
   function importify(element) {
@@ -43,7 +44,6 @@ async function importHTML() {
             } catch (error) {
               if (error.message.includes("is not valid JSON")) {
                 // Insert the fetched HTML content into the element
-                console.log(htmlContent);
 
                 element.innerHTML = htmlContent;
                 importedFiles.add(filePath); // Mark this file as imported
@@ -55,9 +55,7 @@ async function importHTML() {
           .then(async (el) => {
             await importHTML();
 
-            console.log(el && el);
-
-            console.log(el && updateReactElements(el, "again"));
+            el && updateReactElements(el, "again");
           })
           .catch((error) => {
             console.error("Error loading HTML file:", error);
@@ -108,33 +106,36 @@ function updateReactElements(element, again) {
     const key = element.getAttribute("react");
 
     try {
+      const template = element.innerHTML.trim();
       const data = new Function(`return ${key}`)(); // Dynamically evaluate the data key
 
-      if (Array.isArray(data)) {
-        const template = element.innerHTML.trim(); // Save the initial HTML template
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = template;
+      if (template.match(/{\s*([^{}]+)\s*}/g)) {
+        if (Array.isArray(data)) {
+          // Save the initial HTML template
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = template;
 
-        const renderedHTML = data
-          .map((item) =>
-            processTemplate(
-              again
-                ? tempDiv.children[0].innerHTML
-                : tempDiv.children[0].outerHTML,
-              item
+          const renderedHTML = data
+            .map((item) =>
+              processTemplate(
+                again
+                  ? tempDiv.children[0].innerHTML
+                  : tempDiv.children[0].outerHTML,
+                item
+              )
             )
-          )
-          .join("");
+            .join("");
 
-        if (again) {
-          tempDiv.children[0].innerHTML = renderedHTML;
-          element.innerHTML = tempDiv.children[0].outerHTML;
+          if (again) {
+            tempDiv.children[0].innerHTML = renderedHTML;
+            element.innerHTML = tempDiv.children[0].outerHTML;
+          } else {
+            tempDiv.innerHTML = renderedHTML;
+            element.innerHTML = tempDiv.innerHTML;
+          }
         } else {
-          tempDiv.innerHTML = renderedHTML;
-          element.innerHTML = tempDiv.innerHTML;
+          throw Error(data);
         }
-      } else {
-        throw Error(data);
       }
     } catch (error) {
       console.log(error.message);
@@ -163,8 +164,6 @@ function processTemplate(template, data) {
   let processedHTML = template.replace(
     /{\s*([^{}]+)\s*}/g, // Match anything inside curly braces
     (_, expression) => {
-      //console.log(expression, data);
-
       try {
         // Safely evaluate the expression in the context of 'data'
         const func = new Function(
@@ -210,8 +209,18 @@ function getNestedValue(obj, key) {
   return key.split(".").reduce((acc, part) => acc && acc[part], obj);
 }
 
-// Call the function to process the data
-window.addEventListener("DOMContentLoaded", async () => {
+async function dataReact() {
+  importedFiles.clear();
   updateReactElements(); // Then update dynamic elements
   await importHTML(); // Import external HTML files first
-});
+}
+
+function doWithReact(fn = null) {
+  (async () => {
+    const init = async () => await dataReact();
+
+    fn && fn(init);
+  })();
+}
+// Call the function to process the data
+window.addEventListener("DOMContentLoaded", async () => await dataReact());

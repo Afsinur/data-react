@@ -414,6 +414,79 @@ In the main HTML file, you'll reference external HTML templates using the `data-
 
 This external template file is where the dynamic data will be injected. The `data-react="map(propsData)"` (v2) or `react="data"` (v3) indicates the area where the data should be mapped, and the `data-map` (v2) or `{right}` (v3) attribute identifies elements that will receive the data.
 
+## data-react with javascript
+
+### For Version 3 (v3)
+
+```html
+<!-- index.html -->
+<div>
+  <div react-import="./badge" data="badges"></div>
+</div>
+
+<div class="p-2">
+  <button
+    onclick="addRandomObjToArray(badges)"
+    class="px-4 py-1 bg-sky-500 text-white rounded-xl"
+  >
+    add
+  </button>
+</div>
+
+<!-- badge.html -->
+<div class="flex gap-4 flex-wrap">
+  <span
+    onclick="showMyInnerText(this)"
+    class="text-xs rounded-full { redBg ? 'bg-red-300':'bg-sky-300' } p-2"
+    >{ badge }</span
+  >
+</div>
+```
+
+```js
+let badges = [
+  { badge: "technology", redBg: false },
+  { badge: "flowers", redBg: true },
+  { badge: "mountain", redBg: false },
+];
+
+function addRandomObjToArray(arr) {
+  badges = [
+    ...arr,
+    {
+      badge: Math.random().toFixed(2).toString(),
+      redBg: Math.random() > 0.5 ? true : false,
+    },
+  ];
+
+  doWithReact((reload) => reload());
+}
+function showMyInnerText(me) {
+  alert(me.innerText);
+}
+```
+
+This 'doWithReact' function is called like as above when we want some js variable to update and show the updated data in our html, we can also so any kind of task in the 'doWithReact' function and should must call the callback function at the end.
+
+for example
+
+```js
+function addRandomObjToArray(arr) {
+  badges = [
+    ...arr,
+    {
+      badge: Math.random().toFixed(2).toString(),
+      redBg: Math.random() > 0.5 ? true : false,
+    },
+  ];
+
+  doWithReact((reload) => {
+    // do some task here
+    reload();
+  });
+}
+```
+
 ### Summary
 
 This `.md` file contains a description of the `data-react` HTML plugin along with usage examples for including HTML files, mapping arrays, and conditionally rendering data for both v2 and v3 of the plugin. It demonstrates
