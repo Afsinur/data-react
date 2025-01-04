@@ -466,7 +466,7 @@ function showMyInnerText(me) {
 }
 ```
 
-This 'doWithReact' function is called like as above when we want some js variable to update and show the updated data in our html, we can also so any kind of task in the 'doWithReact' function and should must call the callback function at the end.
+This 'doWithReact' function is called like as above when we want some js variable to update and show the updated data in our html, we can also do any kind of task in the 'doWithReact' function and should must call the callback function at the end.
 
 for example
 
